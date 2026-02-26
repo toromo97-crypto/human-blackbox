@@ -1,0 +1,313 @@
+<!-- Chosen Palette: Charcoal & Mint (Sharp, Intelligent, and Refreshing feeling) -->
+<!-- Application Structure Plan: 
+    1. Hero Section: '관계에도 지능이 필요하다'는 메시지로 지적 호기심 자극.
+    2. Interactive Audit (인간관계 지능 테스트): 10가지 문항을 통해 현재 주변 인물들이 내 에너지에 미치는 영향 분석.
+    3. Social Battery Visualization: 내 주변 사람들의 유형(에너지 도둑 vs 충전기)을 시각화하여 '손절'의 필요성을 데이터로 증명.
+    4. The 3 Levels of Cutting Ties: 원고 내용을 바탕으로 지능적인 손절 단계(거리두기 - 차단 - 삭제)를 로드맵으로 제시.
+    Rationale: 편집 기술이 좋은 유저님을 위해, 영상에서 다룬 내용을 유저가 직접 '자기 데이터'로 확인하게 함으로써 채널의 신뢰도를 급상승시킵니다.
+-->
+<!-- Visualization & Content Choices:
+    1. Social Battery Level (CSS/JS): 현재 인간관계의 건강 상태를 배터리 잔량으로 표시.
+    2. Influence Distribution (Chart.js Radar): 내 주변 인물들의 성향(공감, 질투, 비난, 지지)을 다각도로 분석.
+    3. Energy Leakage Simulation (Chart.js Area): 부정적인 관계를 유지할 때 1년 동안 낭비되는 정서적 에너지 총량 시각화.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visuals use Canvas via Chart.js or Tailwind CSS.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인간 블랙박스: 관계 지능 진단 보고서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+        
+        :root {
+            --primary: #0f172a;
+            --accent: #10b981; /* Mint/Emerald */
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e2e8f0;
+            border-radius: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .check-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e293b 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--accent);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-slate-900 text-white flex items-center justify-center rounded-lg font-black italic">B</div>
+                <span class="font-black text-slate-900 tracking-tighter">인간 블랙박스 <span class="text-emerald-500">RELATION</span></span>
+            </div>
+            <div class="text-[10px] font-bold text-slate-400 border border-slate-200 px-2 py-1 rounded">REPORT NO. 28</div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-24">
+
+        <!-- Hero Section -->
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-tight">
+                당신의 <span class="gradient-text">지능</span>은<br>누구를 곁에 두는가?
+            </h1>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                나이가 들수록 인맥보다 중요한 것은 '필터링'입니다.<br>
+                당신의 에너지를 갉아먹는 '쓰레기 인연'을 가려내는<br>
+                <strong>정서적 지능(EQ)</strong>을 지금 바로 진단해 드립니다.
+            </p>
+            <div class="pt-4">
+                <a href="#audit" class="inline-block bg-slate-900 text-white px-10 py-4 rounded-full font-bold shadow-2xl hover:bg-emerald-600 transition-all transform hover:scale-105">
+                    내 주변 인물 진단 시작
+                </a>
+            </div>
+        </section>
+
+        <!-- Audit Section -->
+        <section id="audit" class="scroll-mt-24">
+            <div class="glass-panel p-8 md:p-12 space-y-10">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold">🕵️‍♂️ 블랙박스 관계 필터</h2>
+                    <p class="text-slate-400 text-sm mt-2">최근 3개월간 가장 자주 만난 사람들을 떠올리며 체크해보세요.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="audit-list">
+                    <!-- JS will populate -->
+                </div>
+
+                <div class="pt-10 border-t border-slate-100 flex flex-col items-center">
+                    <div class="text-center mb-6">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">나의 정서적 배터리 상태</span>
+                        <div class="text-5xl font-black mt-2 transition-all" id="battery-percentage">100%</div>
+                    </div>
+                    <div class="w-full max-w-md h-6 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                        <div id="battery-bar" class="h-full bg-emerald-500 transition-all duration-1000" style="width: 100%"></div>
+                    </div>
+                    <div id="status-comment" class="mt-4 font-bold text-emerald-600 text-center">깨끗하고 건강한 관계망을 유지하고 계시네요!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Section -->
+        <section class="space-y-12">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold">📊 관계 지능 시각화</h2>
+                <p class="text-slate-500">당신의 에너지가 어디로 새고 있는지 데이터로 확인하세요.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-panel p-8">
+                    <h3 class="font-bold text-slate-700 mb-6 text-center">인맥 구성원 영향력 분석</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-panel p-8">
+                    <h3 class="font-bold text-slate-700 mb-6 text-center">나쁜 인연 유지 시 예상 손실</h3>
+                    <div class="chart-container">
+                        <canvas id="lossChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategy Section -->
+        <section class="space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold">✂️ 지능적인 손절 로드맵</h2>
+                <p class="text-slate-500">감정에 휘둘리지 않고 우아하게 거리를 두는 기술</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl">🌫️</div>
+                    <h4 class="text-xl font-bold">1단계: 회색 안개</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">상대에게 내 감정과 정보를 주지 않는 'Grey Rock' 전술입니다. 리액션을 줄이고 지루한 사람으로 보이게 하여 스스로 떠나게 만드세요.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-2xl">🚧</div>
+                    <h4 class="text-xl font-bold">2단계: 정서적 방어선</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">"그 질문은 대답하기 곤란해"라고 명확히 선을 긋습니다. 상대의 비난을 내 가치와 분리하는 심리적 방어막을 구축하는 단계입니다.</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-2xl">🚫</div>
+                    <h4 class="text-xl font-bold">3단계: 완전 삭제</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">지능이 높은 사람은 쓰레기통 옆에서 잠들지 않습니다. 나를 갉아먹는 것이 확실하다면 일체의 죄책감 없이 차단하고 내 인생에서 삭제하세요.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12">
+        <div class="max-w-4xl mx-auto px-6 text-center space-y-4">
+            <p class="font-bold text-white tracking-widest uppercase text-xs">Human Blackbox Strategic Report</p>
+            <p class="text-sm">본 진단은 인간 블랙박스의 '지능 순 손절' 원고 데이터를 기반으로 설계되었습니다.</p>
+            <div class="pt-6 flex justify-center gap-4">
+                <span class="px-3 py-1 bg-slate-800 rounded text-[10px] font-bold">심리 분석</span>
+                <span class="px-3 py-1 bg-slate-800 rounded text-[10px] font-bold">정서 지능</span>
+                <span class="px-3 py-1 bg-slate-800 rounded text-[10px] font-bold">관계 공학</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const auditItems = [
+            "함께 있으면 기가 빨리고 피곤하다.",
+            "나의 성취를 진심으로 축하해주지 않는다.",
+            "자신의 불행을 끊임없이 하소연하며 감정을 배설한다.",
+            "은근슬쩍 나를 깎아내리며 자존감을 건드린다.",
+            "약속을 수시로 어기거나 내 시간을 가볍게 여긴다.",
+            "고마움보다 권리를 더 앞세운다.",
+            "다른 사람의 험담을 나에게 끊임없이 늘어놓는다.",
+            "내가 잘되려고 노력할 때 비웃거나 조롱한다.",
+            "오로지 필요할 때만 나를 찾는다.",
+            "함께 보낸 시간보다 '앞으로의 시간'이 더 걱정된다."
+        ];
+
+        function initAudit() {
+            const container = document.getElementById('audit-list');
+            container.innerHTML = auditItems.map((item, idx) => `
+                <label class="check-item flex items-start gap-3 p-4 rounded-xl border border-slate-50 transition cursor-pointer">
+                    <input type="checkbox" class="audit-check w-5 h-5 mt-0.5" onchange="updateAudit()">
+                    <span class="text-sm text-slate-700 leading-snug">${item}</span>
+                </label>
+            `).join('');
+        }
+
+        let radarChart, lossChart;
+
+        function updateAudit() {
+            const checks = document.querySelectorAll('.audit-check:checked').length;
+            const percentage = 100 - (checks * 10);
+            
+            const batteryText = document.getElementById('battery-percentage');
+            const batteryBar = document.getElementById('battery-bar');
+            const comment = document.getElementById('status-comment');
+
+            batteryText.innerText = `${percentage}%`;
+            batteryBar.style.width = `${percentage}%`;
+
+            if (percentage >= 80) {
+                batteryBar.className = "h-full bg-emerald-500 transition-all duration-1000";
+                comment.innerText = "깨끗하고 건강한 관계망을 유지하고 계시네요!";
+                comment.className = "mt-4 font-bold text-emerald-600 text-center";
+            } else if (percentage >= 50) {
+                batteryBar.className = "h-full bg-amber-500 transition-all duration-1000";
+                comment.innerText = "주의! 정서적 에너지가 조금씩 새고 있습니다.";
+                comment.className = "mt-4 font-bold text-amber-600 text-center";
+            } else {
+                batteryBar.className = "h-full bg-red-600 transition-all duration-1000";
+                comment.innerText = "위험! 당신의 지능이 손절을 외치고 있습니다.";
+                comment.className = "mt-4 font-bold text-red-600 text-center";
+            }
+
+            // Sync charts
+            updateCharts(checks);
+        }
+
+        function initCharts() {
+            // Radar Chart
+            const ctxR = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctxR, {
+                type: 'radar',
+                data: {
+                    labels: ['공감/지지', '가스라이팅', '에너지 흡수', '지능적 질투', '신뢰도'],
+                    datasets: [{
+                        label: '내 관계망 특성',
+                        data: [90, 10, 10, 10, 90],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { beginAtZero: true, max: 100, ticks: { display: false } }
+                    }
+                }
+            });
+
+            // Loss Chart
+            const ctxL = document.getElementById('lossChart').getContext('2d');
+            lossChart = new Chart(ctxL, {
+                type: 'bar',
+                data: {
+                    labels: ['현재', '6개월 뒤', '1년 뒤', '3년 뒤'],
+                    datasets: [{
+                        label: '정서적 소진 누적치',
+                        data: [10, 30, 60, 100],
+                        backgroundColor: '#0f172a',
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(checks) {
+            if (!radarChart || !lossChart) return;
+            
+            // Influence logic
+            const support = 100 - (checks * 10);
+            const drain = (checks * 10);
+            radarChart.data.datasets[0].data = [support, drain, drain, drain, support];
+            radarChart.update();
+
+            // Loss logic
+            const factor = checks * 5;
+            lossChart.data.datasets[0].data = [factor, factor*3, factor*6, factor*15];
+            lossChart.update();
+        }
+
+        window.onload = () => {
+            initAudit();
+            initCharts();
+        };
+    </script>
+</body>
+</html>
