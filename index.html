@@ -1,19 +1,18 @@
-<!-- Chosen Palette: Warm Neutrals & Deep Navy (Professional, calming, trustworthy) -->
-<!-- Application Structure Plan:
-    1. Hero Section: Hooking the user with the core problem ("Salary Logout").
-    2. The Diagnosis (Interactive Quiz): Users check their habits to see their "Empty Wallet Risk Score".
-    3. The Psychology of Spending (Interactive Cards): Explaining concepts like Parkinson's Law and Diderot Effect with toggleable details.
-    4. The "Latte Factor" Simulation (Calculator): Users input small daily expenses to see the compounding annual impact (Chart.js).
-    5. Income vs. Lifestyle Inflation (Chart.js): Visualizing why earning more doesn't lead to saving more without a system.
-    6. The Solution Framework: Actionable steps to break the cycle.
-    Rationale: This structure moves from personal relevance (diagnosis) to understanding the root cause (psychology/math), and finally to solutions, mimicking a consulting report or therapy session flow.
+<!-- Chosen Palette: 'Modern Professional Neutral' (Warm Grey, Deep Slate, Amber Accents) -->
+<!-- Application Structure Plan: 
+    1. Hero Section: '월급 로그아웃' 현상을 강렬하게 시각화하여 시선을 고정시킵니다.
+    2. Interactive Diagnosis (텅장 위험도 진단): 사용자가 자신의 소비 습관을 체크하면 실시간으로 '호구 지수'를 계산해 줍니다.
+    3. The 3 Psychological Traps (심리적 함정): 파킨슨의 법칙, 디드로 효과 등 원고 내용을 인터랙티브 카드로 구성하여 학습 효과를 높입니다.
+    4. The Money Leak Simulator (돈 복사기 vs 돈 삭제기): 사용자가 매일 쓰는 소액(커피, 택시 등)을 입력하면 10년 뒤 잃게 될 기회비용을 Chart.js로 시각화합니다.
+    5. Actionable Roadmap: 단순한 분석을 넘어 통장 쪼개기 등 구체적인 솔루션을 제시하여 앱의 완결성을 높입니다.
+    이 구조는 사용자가 자신의 문제를 인지(진단) -> 원인 파악(심리) -> 충격(시뮬레이션) -> 해결(로드맵)로 이어지는 흐름을 갖도록 설계되었습니다.
 -->
 <!-- Visualization & Content Choices:
-    1. Risk Score Gauge (CSS/JS): Visual feedback for the diagnosis quiz.
-    2. "Small Leaks" Calculator (Chart.js Bar Chart): To vividly demonstrate how small daily expenses accumulate over a year vs. 10 years.
-    3. The Hedonic Treadmill (Chart.js Line Chart): Comparing "Income" vs. "Spending" over time to illustrate Parkinson's Law (expenses rising to meet income).
-    4. Psychological Trap Cards (HTML/JS): Click-to-reveal interactions to engage users with definitions and solutions without overwhelming text.
-    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Chart.js used for data viz.
+    1. Risk Score Gauge (Canvas/CSS): 자가진단 결과에 따른 심리적 압박감을 시각적으로 전달.
+    2. Cumulative Loss Chart (Chart.js Bar): 매일의 '딸깍' 소비가 쌓여 거대한 벽이 되는 것을 시각화.
+    3. Parkinson's Gap Chart (Chart.js Line): 소득 증가 속도보다 지출 증가 속도가 빠른 지점을 포착.
+    4. Interactive Solution Cards (HTML/JS): 클릭 시 상세 해결책을 노출하여 정보 과부하 방지.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visualizations use Canvas via Chart.js or structured HTML/CSS.
 -->
 
 <!DOCTYPE html>
@@ -21,505 +20,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>월급 로그아웃 보고서: 텅장의 심리학</title>
+    <title>인간 블랙박스: 월급 텅장 보고서</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
         
+        :root {
+            --bg-main: #fcfcf9;
+            --primary: #1e293b;
+            --accent: #d97706;
+            --text-main: #334155;
+        }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f5f5f0; /* Warm neutral background */
-            color: #1f2937;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-        }
-
-        .highlight {
-            color: #d97706; /* Amber-600 */
-            font-weight: 700;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            scroll-behavior: smooth;
         }
 
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            height: 300px;
+            max-width: 700px;
+            margin: 1.5rem auto;
+            height: 320px;
             max-height: 400px;
         }
 
-        /* Custom Scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af; 
+        .card-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         }
 
-        .nav-item {
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s;
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
         }
-        .nav-item:hover, .nav-item.active {
-            background-color: #e5e7eb;
-            font-weight: 600;
+
+        .btn-active {
+            transform: scale(0.98);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        input[type="range"] {
+            accent-color: var(--accent);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="antialiased">
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-bold text-lg">B</div>
-                <h1 class="text-xl font-bold text-slate-800">인간 블랙박스 보고서</h1>
+    <!-- Navigation -->
+    <nav class="glass-nav sticky top-0 z-50 border-b border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center text-white font-bold">H</div>
+                <span class="font-bold text-slate-800 tracking-tight">인간 블랙박스 보고서</span>
             </div>
-            <nav class="hidden md:flex space-x-2 text-sm text-slate-600">
-                <span class="nav-item active" onclick="scrollToSection('hero')">메인</span>
-                <span class="nav-item" onclick="scrollToSection('diagnosis')">자가진단</span>
-                <span class="nav-item" onclick="scrollToSection('psychology')">심리 분석</span>
-                <span class="nav-item" onclick="scrollToSection('simulation')">소비 시뮬레이션</span>
-                <span class="nav-item" onclick="scrollToSection('solution')">솔루션</span>
-            </nav>
+            <div class="flex gap-4 text-xs font-medium text-slate-500 uppercase">
+                <a href="#diagnosis" class="hover:text-amber-600 transition">진단</a>
+                <a href="#psychology" class="hover:text-amber-600 transition">심리</a>
+                <a href="#simulator" class="hover:text-amber-600 transition">계산기</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="flex-grow max-w-4xl mx-auto px-4 py-8 space-y-12 w-full">
+    <main class="max-w-4xl mx-auto px-4 py-10 space-y-20">
 
-        <!-- 1. Hero Section -->
-        <section id="hero" class="text-center py-10">
-            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">
-                월급은 왜<br><span class="text-amber-600">스쳐 지나가는가?</span>
-            </h2>
-            <p class="text-lg text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-                열심히 일해서 받은 월급, 하지만 통장에 찍히자마자 카드값, 할부금, 공과금으로 순식간에 사라집니다.
-                <br>우리는 이것을 <strong>'텅장(텅 빈 통장) 증후군'</strong>이라 부릅니다.
-                <br>단순히 소득이 적어서일까요? 아니면 당신의 뇌가 당신을 속이고 있는 걸까요?
+        <!-- Hero Section -->
+        <section class="text-center space-y-6 py-12">
+            <div class="inline-block px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold mb-2">REPORT NO. 05</div>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
+                당신의 월급은 왜<br><span class="text-amber-600 underline decoration-slate-200 underline-offset-8">로그아웃</span> 되는가?
+            </h1>
+            <p class="text-slate-500 max-w-xl mx-auto text-lg">
+                열심히 사는데 돈은 안 모이는 억울한 당신을 위해,<br>
+                통장이 텅장이 되는 심리적 기전을 추적합니다.
             </p>
-            <button onclick="scrollToSection('diagnosis')" class="bg-slate-800 text-white px-8 py-3 rounded-full font-semibold hover:bg-slate-700 transition shadow-lg transform hover:scale-105">
-                내 '텅장' 위험도 진단하기
-            </button>
+            <div class="pt-6">
+                <a href="#diagnosis" class="bg-slate-800 text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-slate-700 transition-all pulse">
+                    내 '호구력' 테스트 시작하기
+                </a>
+            </div>
         </section>
 
-        <!-- 2. Diagnosis Section -->
-        <section id="diagnosis" class="scroll-mt-24">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">🕵️‍♂️ 텅장 위험도 자가진단</h3>
-                <p class="text-slate-600">아래 항목 중 본인에게 해당하는 것을 체크해보세요. 당신의 소비 습관 패턴을 분석해드립니다.</p>
-            </div>
-
-            <div class="card p-6 md:p-8 bg-white border border-slate-100">
-                <div class="space-y-3" id="checklist-container">
-                    <!-- Javascript will populate checkboxes here -->
+        <!-- Diagnosis Section -->
+        <section id="diagnosis" class="scroll-mt-20">
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm space-y-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-slate-800">🕵️‍♂️ 텅장 위험도 자가진단</h2>
+                    <p class="text-sm text-slate-400 mt-2">해당하는 항목을 모두 체크해보세요.</p>
                 </div>
-                
-                <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between">
-                    <div class="text-center md:text-left mb-4 md:mb-0">
-                        <span class="text-sm text-slate-500 uppercase tracking-wide">위험도 점수</span>
-                        <div class="text-3xl font-bold text-slate-800" id="score-display">0 / 10</div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quiz-container">
+                    <!-- JS will populate -->
+                </div>
+
+                <div class="mt-10 p-6 bg-slate-50 rounded-2xl flex flex-col md:flex-row items-center justify-around gap-6">
+                    <div class="text-center">
+                        <div class="text-sm text-slate-400 font-bold uppercase">나의 텅장 지수</div>
+                        <div class="text-5xl font-black text-slate-800" id="risk-score">0%</div>
                     </div>
-                    <div class="w-full md:w-1/2">
-                        <div class="w-full bg-gray-200 rounded-full h-4">
-                            <div id="score-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="flex-grow w-full max-w-sm">
+                        <div class="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+                            <div id="risk-bar" class="h-full bg-amber-500 transition-all duration-700" style="width: 0%"></div>
                         </div>
-                        <p id="score-comment" class="text-sm text-slate-600 mt-2 text-right font-medium">-</p>
+                        <div class="flex justify-between text-[10px] mt-2 font-bold text-slate-400">
+                            <span>안전</span>
+                            <span>주의</span>
+                            <span>위험</span>
+                            <span>탈출불가</span>
+                        </div>
                     </div>
                 </div>
+                <div id="risk-result-text" class="text-center text-slate-600 font-medium h-6">체크박스를 선택하면 결과가 나옵니다.</div>
             </div>
         </section>
 
-        <!-- 3. Psychology Section -->
-        <section id="psychology" class="scroll-mt-24">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">🧠 뇌가 당신을 가난하게 만드는 3가지 함정</h3>
-                <p class="text-slate-600">돈이 모이지 않는 건 의지력 문제가 아닙니다. 심리학적 원리를 이해해야 막을 수 있습니다.</p>
+        <!-- Psychology Section -->
+        <section id="psychology" class="scroll-mt-20 space-y-10">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-slate-800">🧠 당신을 가난하게 만드는 심리 함정</h2>
+                <p class="text-slate-500 italic">"의지력이 부족한 게 아니라, 시스템에 당하고 있는 겁니다."</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Trap 1 -->
-                <div class="card p-6 cursor-pointer hover:bg-slate-50 transition" onclick="toggleCard('trap1')">
-                    <div class="text-3xl mb-4">📈</div>
-                    <h4 class="text-xl font-bold mb-2">파킨슨의 법칙</h4>
-                    <p class="text-sm text-slate-500 mb-4">소득이 늘어나면 왜 저축도 늘지 않을까?</p>
-                    <div id="trap1" class="hidden text-slate-700 text-sm border-t pt-4 mt-2">
-                        <p class="mb-2"><strong>"지출은 소득에 맞춰 증가한다."</strong></p>
-                        <p>연봉이 오르면 더 좋은 집, 더 좋은 차, 더 비싼 취미를 찾게 됩니다. 의식적으로 통제하지 않으면 소득 증가분은 모두 생활 수준 유지비로 흡수됩니다.</p>
-                    </div>
-                    <div class="text-center mt-2 text-amber-600 text-xs font-bold">눌러서 자세히 보기 ▼</div>
+                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(0)">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 flex items-center justify-center rounded-xl text-2xl mb-4">📈</div>
+                    <h3 class="font-bold text-slate-800 text-lg">파킨슨의 법칙</h3>
+                    <p class="text-sm text-slate-500 mt-2">소득이 늘면 지출은 그보다 더 빨리 늘어납니다.</p>
                 </div>
-
                 <!-- Trap 2 -->
-                <div class="card p-6 cursor-pointer hover:bg-slate-50 transition" onclick="toggleCard('trap2')">
-                    <div class="text-3xl mb-4">🛍️</div>
-                    <h4 class="text-xl font-bold mb-2">디드로 효과</h4>
-                    <p class="text-sm text-slate-500 mb-4">물건 하나를 샀는데 왜 계속 사게 될까?</p>
-                    <div id="trap2" class="hidden text-slate-700 text-sm border-t pt-4 mt-2">
-                        <p class="mb-2"><strong>"하나의 소비가 연쇄 소비를 부른다."</strong></p>
-                        <p>새 옷을 사면, 그에 어울리는 신발이 필요하고, 가방이 필요해집니다. 심리적 통일성을 맞추기 위해 불필요한 연쇄 소비가 일어나는 현상입니다.</p>
-                    </div>
-                    <div class="text-center mt-2 text-amber-600 text-xs font-bold">눌러서 자세히 보기 ▼</div>
+                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(1)">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 flex items-center justify-center rounded-xl text-2xl mb-4">🔗</div>
+                    <h3 class="font-bold text-slate-800 text-lg">디드로 효과</h3>
+                    <p class="text-sm text-slate-500 mt-2">물건 하나를 사면 그에 맞는 연쇄 소비가 발생합니다.</p>
                 </div>
-
                 <!-- Trap 3 -->
-                <div class="card p-6 cursor-pointer hover:bg-slate-50 transition" onclick="toggleCard('trap3')">
-                    <div class="text-3xl mb-4">☕</div>
-                    <h4 class="text-xl font-bold mb-2">라떼 효과</h4>
-                    <p class="text-sm text-slate-500 mb-4">작은 돈을 무시하면 어떤 일이 벌어질까?</p>
-                    <div id="trap3" class="hidden text-slate-700 text-sm border-t pt-4 mt-2">
-                        <p class="mb-2"><strong>"티끌 모아 태산이다 (지출 편)."</strong></p>
-                        <p>매일 마시는 5,000원 커피, 택시비, 편의점 간식. 작아 보이는 지출이 모이면 1년에 수백만 원, 10년이면 중형차 한 대 값이 됩니다.</p>
-                    </div>
-                    <div class="text-center mt-2 text-amber-600 text-xs font-bold">눌러서 자세히 보기 ▼</div>
+                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(2)">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 flex items-center justify-center rounded-xl text-2xl mb-4">☕</div>
+                    <h3 class="font-bold text-slate-800 text-lg">라떼 효과</h3>
+                    <p class="text-sm text-slate-500 mt-2">작은 소비가 모여 당신의 미래 자산을 삭제합니다.</p>
+                </div>
+            </div>
+
+            <div id="trap-detail-box" class="bg-slate-900 text-slate-100 p-8 rounded-3xl hidden transform transition duration-500">
+                <div class="flex justify-between items-start mb-4">
+                    <h4 id="trap-title" class="text-2xl font-bold text-amber-400"></h4>
+                    <button onclick="closeTrapDetail()" class="text-slate-400 hover:text-white">✕</button>
+                </div>
+                <p id="trap-desc" class="text-slate-300 leading-relaxed"></p>
+                <div class="mt-6 p-4 bg-slate-800 rounded-xl border-l-4 border-amber-500">
+                    <span class="text-xs font-bold text-amber-500 uppercase">Blackbox Solution</span>
+                    <p id="trap-solution" class="text-sm mt-1"></p>
                 </div>
             </div>
             
-            <!-- Visualization for Parkinson's Law -->
-            <div class="mt-8 card p-6">
-                <h4 class="text-lg font-bold text-slate-800 mb-4 text-center">파킨슨의 법칙 시각화: 소득 vs 지출 추이</h4>
+            <div class="card-gradient border border-slate-100 p-8 rounded-3xl">
+                <h4 class="text-center font-bold text-slate-700 mb-6 italic">"수입이 늘어나도 잔고는 그대로인 이유"</h4>
                 <div class="chart-container">
                     <canvas id="parkinsonChart"></canvas>
                 </div>
-                <p class="text-center text-xs text-slate-500 mt-4">
-                    일반적인 직장인의 경우, 소득(파란선)이 올라도 지출(빨간선)이 따라 올라가 저축(차이)은 거의 변하지 않습니다.
-                </p>
             </div>
         </section>
 
-        <!-- 4. Simulation Section -->
-        <section id="simulation" class="scroll-mt-24">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">💸 '새는 돈' 시뮬레이터</h3>
-                <p class="text-slate-600">무의식적인 '습관성 소비'가 당신의 미래 자산을 얼마나 갉아먹는지 계산해봅시다.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Inputs -->
-                <div class="card p-6">
-                    <h4 class="font-bold text-lg mb-4 text-slate-700">하루 평균 습관 지출</h4>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">☕ 카페/음료 (원)</label>
-                            <input type="number" id="input-coffee" value="5000" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" oninput="updateSimulation()">
+        <!-- Simulator Section -->
+        <section id="simulator" class="scroll-mt-20">
+            <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-lg">
+                <div class="bg-slate-800 p-8 text-white">
+                    <h2 class="text-2xl font-bold">💸 '새는 돈' 기회비용 시뮬레이터</h2>
+                    <p class="text-slate-400 text-sm mt-2">무심코 누른 '결제' 버튼이 10년 뒤 당신의 차 한 대를 날립니다.</p>
+                </div>
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-bold text-slate-600">☕ 하루 커피/음료</label>
+                                <span class="text-amber-600 font-bold" id="val-coffee">5,000원</span>
+                            </div>
+                            <input type="range" min="0" max="30000" step="500" value="5000" class="w-full" oninput="calculateSimulator('coffee', this.value)">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">🚕 택시/배달비 (원/일 환산)</label>
-                            <input type="number" id="input-delivery" value="3000" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" oninput="updateSimulation()">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-bold text-slate-600">🚕 일 평균 택시/배달</label>
+                                <span class="text-amber-600 font-bold" id="val-taxi">3,000원</span>
+                            </div>
+                            <input type="range" min="0" max="100000" step="1000" value="3000" class="w-full" oninput="calculateSimulator('taxi', this.value)">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">🍪 편의점/군것질 (원)</label>
-                            <input type="number" id="input-snack" value="3000" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" oninput="updateSimulation()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">🚬 기타 기호식품/구독료 (원/일 환산)</label>
-                            <input type="number" id="input-etc" value="2000" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" oninput="updateSimulation()">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-bold text-slate-600">🛍️ 기타 충동 소비(일 환산)</label>
+                                <span class="text-amber-600 font-bold" id="val-etc">2,000원</span>
+                            </div>
+                            <input type="range" min="0" max="50000" step="1000" value="2000" class="w-full" oninput="calculateSimulator('etc', this.value)">
                         </div>
                     </div>
-                </div>
-
-                <!-- Results -->
-                <div class="card p-6 flex flex-col justify-center bg-slate-800 text-white">
-                    <h4 class="font-bold text-lg mb-4 text-amber-400">당신이 잃고 있는 기회비용</h4>
-                    
-                    <div class="space-y-6 text-center">
-                        <div>
-                            <p class="text-slate-300 text-sm">하루 합계</p>
-                            <p class="text-2xl font-bold" id="result-daily">0 원</p>
-                        </div>
-                        <div class="border-t border-slate-600 pt-4">
-                            <p class="text-slate-300 text-sm">1년이면</p>
-                            <p class="text-3xl font-bold text-amber-400" id="result-yearly">0 원</p>
-                        </div>
-                        <div class="border-t border-slate-600 pt-4">
-                            <p class="text-slate-300 text-sm">10년이면 (단순 합계)</p>
-                            <p class="text-4xl font-extrabold text-red-400" id="result-decade">0 원</p>
-                        </div>
+                    <div class="flex flex-col justify-center items-center bg-slate-50 rounded-2xl p-6 text-center">
+                        <div class="text-slate-400 text-xs font-bold uppercase mb-1">10년 누적 손실액</div>
+                        <div class="text-4xl font-black text-red-600 mb-2" id="total-loss">₩ 36,500,000</div>
+                        <p class="text-slate-500 text-sm">중형차 한 대 값을<br>'딸깍' 몇 번으로 날리고 계십니다.</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-8 card p-6">
-                <div class="chart-container">
-                    <canvas id="latteChart"></canvas>
+                <div class="p-8 border-t border-slate-50">
+                    <div class="chart-container">
+                        <canvas id="lossChart"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 5. Solution Section -->
-        <section id="solution" class="scroll-mt-24 mb-12">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">🔑 텅장 탈출 솔루션</h3>
-                <p class="text-slate-600">심리적 약점을 보완하는 시스템을 만들어야 합니다.</p>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
-                <div class="p-6 md:p-8 space-y-6">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">1️⃣</div>
-                        <div class="ml-4">
-                            <h4 class="text-lg font-bold text-slate-800">선저축 후지출 시스템화</h4>
-                            <p class="text-slate-600 text-sm mt-1">월급이 들어오는 즉시 자동이체로 저축액을 빼버리세요. 남은 돈으로 생활하도록 강제하는 환경 설정이 의지력보다 강력합니다.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">2️⃣</div>
-                        <div class="ml-4">
-                            <h4 class="text-lg font-bold text-slate-800">통장 쪼개기 (파킹 통장 활용)</h4>
-                            <p class="text-slate-600 text-sm mt-1">생활비, 비상금, 저축 통장을 물리적으로 분리하세요. 하나의 통장에 모든 돈이 있으면 뇌는 그 돈을 전부 '써도 되는 돈'으로 인식합니다.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">3️⃣</div>
-                        <div class="ml-4">
-                            <h4 class="text-lg font-bold text-slate-800">72시간의 법칙</h4>
-                            <p class="text-slate-600 text-sm mt-1">사고 싶은 물건이 생기면 장바구니에 담고 72시간 동안 결제를 미루세요. 도파민이 가라앉고 나면 90%는 사고 싶지 않아집니다.</p>
-                        </div>
-                    </div>
+        <!-- Final Solution -->
+        <section class="bg-amber-50 rounded-3xl p-10 border border-amber-100 space-y-6">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                🚀 텅장 탈출을 위한 '블랙박스' 행동 강령
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-amber-200">
+                    <div class="text-amber-600 font-bold mb-1">01. 선저축 후지출</div>
+                    <p class="text-xs text-slate-500">지출 후 남은 돈을 저축하는 게 아니라, 저축액을 먼저 빼고 남은 돈으로 '생존'하세요.</p>
                 </div>
-                <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
-                    <p class="text-sm font-medium text-slate-600">
-                        "부자가 되는 것은 얼마나 버느냐가 아니라, <span class="text-amber-600 font-bold">얼마나 지키느냐</span>에 달려있습니다."
-                    </p>
+                <div class="bg-white p-4 rounded-xl border border-amber-200">
+                    <div class="text-amber-600 font-bold mb-1">02. 72시간 장바구니 법칙</div>
+                    <p class="text-xs text-slate-500">사고 싶은 게 생기면 장바구니에 담고 3일만 기다리세요. 도파민이 사라지면 90%는 안 사게 됩니다.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-amber-200">
+                    <div class="text-amber-600 font-bold mb-1">03. 통장 쪼개기</div>
+                    <p class="text-xs text-slate-500">생활비 통장에 모든 돈을 두지 마세요. 뇌는 잔고가 있으면 '써도 되는 돈'으로 착각합니다.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-amber-200">
+                    <div class="text-amber-600 font-bold mb-1">04. 딸깍 사기 주의</div>
+                    <p class="text-xs text-slate-500">누구도 당신에게 쉽게 부자 되는 법을 공짜로 알려주지 않습니다. 본질을 키우는 공부에 투자하세요.</p>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="bg-slate-800 text-slate-300 py-8 mt-auto">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <p class="font-bold text-lg mb-2">인간 블랙박스</p>
-            <p class="text-sm opacity-70">일상의 마음을 기록하고 분석하는 심리학 채널</p>
-            <p class="text-xs mt-4 text-slate-500">© 2026 Human Blackbox. All rights reserved.</p>
+    <footer class="bg-white border-t border-slate-200 py-10">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-4">
+            <p class="text-slate-400 text-sm">본 보고서는 유튜버 <span class="text-slate-700 font-bold">인간 블랙박스</span> 채널의 기획안을 바탕으로 제작되었습니다.</p>
+            <div class="flex justify-center gap-6 grayscale opacity-50">
+                <span class="text-xs font-bold">심리학</span>
+                <span class="text-xs font-bold">행동경제학</span>
+                <span class="text-xs font-bold">재테크 마인드</span>
+            </div>
         </div>
     </footer>
 
     <script>
-        // --- 1. Diagnosis Logic ---
-        const checkListItems = [
-            "월급날 퍼가요~♡ 후 남은 돈이 거의 없다.",
-            "신용카드 할부가 3건 이상 남아있다.",
-            "배달 음식이나 택시를 주 3회 이상 이용한다.",
-            "세일 문구를 보면 당장 필요 없어도 산다.",
-            "기분이 우울하거나 스트레스 받으면 쇼핑을 한다.",
-            "정확한 한 달 생활비를 모른다.",
-            "저축을 먼저 하기보다 쓰고 남은 돈을 저축한다.",
-            "1+1 상품은 무조건 사야 이득이라고 생각한다.",
-            "편의점에 들어가면 계획에 없던 간식을 산다.",
-            "친구들이 사면 나도 따라 사야 할 것 같다."
+        // --- Core Data ---
+        const traps = [
+            {
+                title: "파킨슨의 법칙 (Parkinson's Law)",
+                desc: "수입이 늘어나면 지출은 그에 맞춰 무조건 늘어납니다. 월급이 200만 원일 때 10만 원 남기던 사람이, 400만 원이 되어도 20만 원밖에 못 남기는 이유입니다. 인간의 욕망은 가용 자원에 맞춰 팽창하기 때문입니다.",
+                sol: "수입 증가분의 최소 70%는 보이지 않는 곳(적금, 투자)으로 즉시 격리시켜야 합니다."
+            },
+            {
+                title: "디드로 효과 (Diderot Effect)",
+                desc: "새로운 가운을 선물 받은 철학자 디드로가 가운에 맞춰 가구, 거울 등을 모두 바꾸며 가난해진 일화에서 유래했습니다. 하나의 소비가 다른 소비를 부르는 연쇄 반응은 당신의 지갑을 털어가는 주범입니다.",
+                sol: "소비할 때 '이 물건 때문에 추가로 사야 할 것'이 있는지 먼저 계산하고, 세트로 사지 마세요."
+            },
+            {
+                title: "라떼 효과 (Latte Factor)",
+                desc: "매일 마시는 5,000원짜리 커피 한 잔을 무시하지 마세요. 소액이라 결제 시 고통이 적지만, 10년, 20년 쌓이면 중형차 한 대, 아파트 한 채의 계약금이 사라지는 마법입니다.",
+                sol: "자잘한 소비(배달, 택시, 커피)의 월 합계액을 눈으로 확인하고, 한도를 정해두세요."
+            }
         ];
 
-        function initDiagnosis() {
-            const container = document.getElementById('checklist-container');
-            container.innerHTML = checkListItems.map((item, index) => `
-                <label class="flex items-center space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer transition">
-                    <input type="checkbox" class="habit-check w-5 h-5 text-amber-600 rounded border-slate-300 focus:ring-amber-500" onchange="calculateScore()">
-                    <span class="text-slate-700">${item}</span>
-                </label>
-            `).join('');
-        }
+        const quizItems = [
+            "월급날 로그인하자마자 로그아웃된다.",
+            "카드 할부가 3건 이상 살아있다.",
+            "배달 음식이나 택시를 주 3회 이상 탄다.",
+            "스트레스 받으면 무조건 쇼핑 앱을 켠다.",
+            "구독 서비스 중 안 쓰는 게 2개 이상이다.",
+            "내가 한 달에 얼마 쓰는지 정확히 모른다.",
+            "저축하고 남은 돈을 쓰는 게 아니라, 쓰고 남은 걸 저축한다.",
+            "1+1 상품을 보면 일단 사고 본다."
+        ];
 
-        function calculateScore() {
-            const checks = document.querySelectorAll('.habit-check:checked').length;
-            const scoreDisplay = document.getElementById('score-display');
-            const scoreBar = document.getElementById('score-bar');
-            const scoreComment = document.getElementById('score-comment');
+        // --- UI Logic ---
+        const quizContainer = document.getElementById('quiz-container');
+        quizItems.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = "flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-xl hover:border-amber-400 transition cursor-pointer";
+            div.innerHTML = `
+                <input type="checkbox" id="q-${idx}" class="w-5 h-5 accent-amber-600 quiz-check" onchange="calculateRisk()">
+                <label for="q-${idx}" class="text-sm font-medium text-slate-700 cursor-pointer flex-grow">${item}</label>
+            `;
+            quizContainer.appendChild(div);
+        });
 
-            scoreDisplay.textContent = `${checks} / 10`;
-            scoreBar.style.width = `${checks * 10}%`;
+        function calculateRisk() {
+            const checked = document.querySelectorAll('.quiz-check:checked').length;
+            const score = Math.round((checked / quizItems.length) * 100);
+            const scoreEl = document.getElementById('risk-score');
+            const barEl = document.getElementById('risk-bar');
+            const textEl = document.getElementById('risk-result-text');
 
-            if (checks <= 2) {
-                scoreBar.className = "bg-green-500 h-4 rounded-full transition-all duration-500";
-                scoreComment.textContent = "아직은 안전해요! 좋은 습관을 유지하세요.";
-                scoreComment.className = "text-sm mt-2 text-right font-bold text-green-600";
-            } else if (checks <= 6) {
-                scoreBar.className = "bg-yellow-500 h-4 rounded-full transition-all duration-500";
-                scoreComment.textContent = "주의 요망! 텅장 초기 증상입니다.";
-                scoreComment.className = "text-sm mt-2 text-right font-bold text-yellow-600";
+            scoreEl.innerText = `${score}%`;
+            barEl.style.width = `${score}%`;
+
+            if (score < 30) {
+                textEl.innerText = "훌륭합니다! 당신은 자제력이 매우 뛰어납니다. ✨";
+                barEl.className = "h-full bg-green-500 transition-all duration-700";
+            } else if (score < 60) {
+                textEl.innerText = "위험 구간입니다. 슬슬 구멍 난 지갑을 고쳐야 해요. ⚠️";
+                barEl.className = "h-full bg-amber-500 transition-all duration-700";
             } else {
-                scoreBar.className = "bg-red-500 h-4 rounded-full transition-all duration-500";
-                scoreComment.textContent = "위험! 이대로라면 평생 가난의 굴레를 벗어날 수 없습니다.";
-                scoreComment.className = "text-sm mt-2 text-right font-bold text-red-600";
+                textEl.innerText = "당신은 현재 마케팅 깔때기의 중심에 서 있습니다. 🚨";
+                barEl.className = "h-full bg-red-600 transition-all duration-700";
             }
         }
 
-        // --- 2. Psychology Card Interaction ---
-        function toggleCard(id) {
-            const content = document.getElementById(id);
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-            } else {
-                content.classList.add('hidden');
-            }
+        function showTrapDetail(idx) {
+            const box = document.getElementById('trap-detail-box');
+            document.getElementById('trap-title').innerText = traps[idx].title;
+            document.getElementById('trap-desc').innerText = traps[idx].desc;
+            document.getElementById('trap-solution').innerText = traps[idx].sol;
+            
+            box.classList.remove('hidden');
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // --- 3. Simulation Logic & Charts ---
-        let latteChartInstance = null;
-        let parkinsonChartInstance = null;
-
-        function updateSimulation() {
-            const coffee = Number(document.getElementById('input-coffee').value) || 0;
-            const delivery = Number(document.getElementById('input-delivery').value) || 0;
-            const snack = Number(document.getElementById('input-snack').value) || 0;
-            const etc = Number(document.getElementById('input-etc').value) || 0;
-
-            const dailyTotal = coffee + delivery + snack + etc;
-            const yearlyTotal = dailyTotal * 365;
-            const decadeTotal = yearlyTotal * 10;
-
-            document.getElementById('result-daily').textContent = dailyTotal.toLocaleString() + ' 원';
-            document.getElementById('result-yearly').textContent = yearlyTotal.toLocaleString() + ' 원';
-            document.getElementById('result-decade').textContent = decadeTotal.toLocaleString() + ' 원';
-
-            updateLatteChart(yearlyTotal);
+        function closeTrapDetail() {
+            document.getElementById('trap-detail-box').classList.add('hidden');
         }
 
-        function initLatteChart() {
-            const ctx = document.getElementById('latteChart').getContext('2d');
-            latteChartInstance = new Chart(ctx, {
-                type: 'bar',
+        // --- Charts Implementation ---
+        let lossChart, parkinsonChart;
+
+        function initCharts() {
+            // Parkinson's Chart
+            const ctxP = document.getElementById('parkinsonChart').getContext('2d');
+            parkinsonChart = new Chart(ctxP, {
+                type: 'line',
                 data: {
-                    labels: ['1년 합계', '3년 합계', '5년 합계', '10년 합계'],
+                    labels: ['사원', '대리', '과장', '차장', '부장'],
                     datasets: [{
-                        label: '누적 낭비 금액 (원)',
-                        data: [0, 0, 0, 0],
-                        backgroundColor: [
-                            'rgba(251, 191, 36, 0.6)', // Amber 400
-                            'rgba(245, 158, 11, 0.6)', // Amber 500
-                            'rgba(217, 119, 6, 0.6)',  // Amber 600
-                            'rgba(180, 83, 9, 0.6)'    // Amber 700
-                        ],
-                        borderColor: [
-                            'rgba(251, 191, 36, 1)',
-                            'rgba(245, 158, 11, 1)',
-                            'rgba(217, 119, 6, 1)',
-                            'rgba(180, 83, 9, 1)'
-                        ],
-                        borderWidth: 1
+                        label: '월 소득 (백만)',
+                        data: [2.5, 3.5, 4.5, 5.5, 7.0],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '월 지출 (백만)',
+                        data: [2.3, 3.4, 4.4, 5.4, 6.9],
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y.toLocaleString() + ' 원';
-                                }
-                            }
-                        }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return (value / 10000) + '만';
-                                }
-                            }
-                        }
+                        y: { beginAtZero: false, ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
                     }
                 }
             });
-            updateSimulation(); // Initial update
-        }
 
-        function updateLatteChart(yearlyAmount) {
-            if (latteChartInstance) {
-                latteChartInstance.data.datasets[0].data = [
-                    yearlyAmount,
-                    yearlyAmount * 3,
-                    yearlyAmount * 5,
-                    yearlyAmount * 10
-                ];
-                latteChartInstance.update();
-            }
-        }
-
-        function initParkinsonChart() {
-            const ctx = document.getElementById('parkinsonChart').getContext('2d');
-            parkinsonChartInstance = new Chart(ctx, {
-                type: 'line',
+            // Loss Chart
+            const ctxL = document.getElementById('lossChart').getContext('2d');
+            lossChart = new Chart(ctxL, {
+                type: 'bar',
                 data: {
-                    labels: ['입사 1년차', '3년차', '5년차', '7년차', '10년차'],
-                    datasets: [
-                        {
-                            label: '소득 (Income)',
-                            data: [3000, 3500, 4200, 5000, 6000],
-                            borderColor: '#3b82f6', // Blue
-                            backgroundColor: '#3b82f6',
-                            tension: 0.3
-                        },
-                        {
-                            label: '지출 (Spending)',
-                            data: [2800, 3400, 4100, 4900, 5900], // Spending tracks income closely
-                            borderColor: '#ef4444', // Red
-                            backgroundColor: '#ef4444',
-                            tension: 0.3
-                        }
-                    ]
+                    labels: ['1년', '3년', '5년', '10년'],
+                    datasets: [{
+                        label: '누적 기회비용 (원)',
+                        data: [3650000, 10950000, 18250000, 36500000],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 8
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems) {
-                                    const income = tooltipItems[0].raw;
-                                    const spending = tooltipItems[1].raw;
-                                    return `저축 가능액: ${(income - spending)}만 원`;
-                                }
-                            }
-                        }
+                        legend: { display: false }
                     },
                     scales: {
-                        y: {
-                            title: { display: true, text: '단위: 만 원 (월)' }
+                        y: { 
+                            ticks: { 
+                                callback: value => (value / 10000).toLocaleString() + '만',
+                                font: { size: 10 }
+                            }
                         }
                     }
                 }
             });
         }
 
-        // --- Navigation ---
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        const simState = { coffee: 5000, taxi: 3000, etc: 2000 };
+
+        function calculateSimulator(key, val) {
+            simState[key] = parseInt(val);
+            document.getElementById(`val-${key}`).innerText = simState[key].toLocaleString() + '원';
+
+            const dailyTotal = simState.coffee + simState.taxi + simState.etc;
+            const total10 = dailyTotal * 365 * 10;
+
+            document.getElementById('total-loss').innerText = `₩ ${total10.toLocaleString()}`;
             
-            // Update active nav state
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
+            lossChart.data.datasets[0].data = [
+                dailyTotal * 365,
+                dailyTotal * 365 * 3,
+                dailyTotal * 365 * 5,
+                total10
+            ];
+            lossChart.update();
         }
 
-        // --- Initialization ---
-        window.onload = function() {
-            initDiagnosis();
-            initLatteChart();
-            initParkinsonChart();
+        window.onload = () => {
+            initCharts();
+            calculateRisk();
         };
 
     </script>
