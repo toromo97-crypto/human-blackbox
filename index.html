@@ -1,463 +1,239 @@
-<!-- Chosen Palette: 'Modern Professional Neutral' (Warm Grey, Deep Slate, Amber Accents) -->
-<!-- Application Structure Plan: 
-    1. Hero Section: '월급 로그아웃' 현상을 강렬하게 시각화하여 시선을 고정시킵니다.
-    2. Interactive Diagnosis (텅장 위험도 진단): 사용자가 자신의 소비 습관을 체크하면 실시간으로 '호구 지수'를 계산해 줍니다.
-    3. The 3 Psychological Traps (심리적 함정): 파킨슨의 법칙, 디드로 효과 등 원고 내용을 인터랙티브 카드로 구성하여 학습 효과를 높입니다.
-    4. The Money Leak Simulator (돈 복사기 vs 돈 삭제기): 사용자가 매일 쓰는 소액(커피, 택시 등)을 입력하면 10년 뒤 잃게 될 기회비용을 Chart.js로 시각화합니다.
-    5. Actionable Roadmap: 단순한 분석을 넘어 통장 쪼개기 등 구체적인 솔루션을 제시하여 앱의 완결성을 높입니다.
-    이 구조는 사용자가 자신의 문제를 인지(진단) -> 원인 파악(심리) -> 충격(시뮬레이션) -> 해결(로드맵)로 이어지는 흐름을 갖도록 설계되었습니다.
--->
-<!-- Visualization & Content Choices:
-    1. Risk Score Gauge (Canvas/CSS): 자가진단 결과에 따른 심리적 압박감을 시각적으로 전달.
-    2. Cumulative Loss Chart (Chart.js Bar): 매일의 '딸깍' 소비가 쌓여 거대한 벽이 되는 것을 시각화.
-    3. Parkinson's Gap Chart (Chart.js Line): 소득 증가 속도보다 지출 증가 속도가 빠른 지점을 포착.
-    4. Interactive Solution Cards (HTML/JS): 클릭 시 상세 해결책을 노출하여 정보 과부하 방지.
-    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visualizations use Canvas via Chart.js or structured HTML/CSS.
--->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인간 블랙박스: 월급 텅장 보고서</title>
+    <title>Sincerity Trap Audit | 인간 블랙박스</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-        
-        :root {
-            --bg-main: #fcfcf9;
-            --primary: #1e293b;
-            --accent: #d97706;
-            --text-main: #334155;
-        }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            scroll-behavior: smooth;
-        }
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 700px;
-            margin: 1.5rem auto;
-            height: 320px;
-            max-height: 400px;
-        }
-
-        .card-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        }
-
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-active {
-            transform: scale(0.98);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        input[type="range"] {
-            accent-color: var(--accent);
-        }
-
-        .pulse {
-            animation: pulse-animation 2s infinite;
-        }
-
-        @keyframes pulse-animation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
+        .animate-fade-in { animation: fadeIn 0.7s ease-out forwards; }
+        .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .gauge-circle { transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-stone-50 text-slate-900 min-h-screen pb-20">
 
-    <!-- Navigation -->
-    <nav class="glass-nav sticky top-0 z-50 border-b border-slate-200">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center text-white font-bold">H</div>
-                <span class="font-bold text-slate-800 tracking-tight">인간 블랙박스 보고서</span>
+                <div class="w-8 h-8 bg-slate-900 rounded flex items-center justify-center text-white font-bold italic">B</div>
+                <span class="font-extrabold tracking-tighter text-lg uppercase">Sincerity <span class="text-orange-600">Trap</span> Audit</span>
             </div>
-            <div class="flex gap-4 text-xs font-medium text-slate-500 uppercase">
-                <a href="#diagnosis" class="hover:text-amber-600 transition">진단</a>
-                <a href="#psychology" class="hover:text-amber-600 transition">심리</a>
-                <a href="#simulator" class="hover:text-amber-600 transition">계산기</a>
-            </div>
+            <span class="text-[10px] font-bold text-slate-400 border border-stone-200 px-2 py-1 rounded">REF. ID: HB-POVERTY-02</span>
         </div>
-    </nav>
+    </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-10 space-y-20">
-
-        <!-- Hero Section -->
-        <section class="text-center space-y-6 py-12">
-            <div class="inline-block px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold mb-2">REPORT NO. 05</div>
-            <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
-                당신의 월급은 왜<br><span class="text-amber-600 underline decoration-slate-200 underline-offset-8">로그아웃</span> 되는가?
-            </h1>
-            <p class="text-slate-500 max-w-xl mx-auto text-lg">
-                열심히 사는데 돈은 안 모이는 억울한 당신을 위해,<br>
-                통장이 텅장이 되는 심리적 기전을 추적합니다.
-            </p>
-            <div class="pt-6">
-                <a href="#diagnosis" class="bg-slate-800 text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-slate-700 transition-all pulse">
-                    내 '호구력' 테스트 시작하기
-                </a>
-            </div>
-        </section>
-
-        <!-- Diagnosis Section -->
-        <section id="diagnosis" class="scroll-mt-20">
-            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm space-y-8">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-slate-800">🕵️‍♂️ 텅장 위험도 자가진단</h2>
-                    <p class="text-sm text-slate-400 mt-2">해당하는 항목을 모두 체크해보세요.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quiz-container">
-                    <!-- JS will populate -->
-                </div>
-
-                <div class="mt-10 p-6 bg-slate-50 rounded-2xl flex flex-col md:flex-row items-center justify-around gap-6">
-                    <div class="text-center">
-                        <div class="text-sm text-slate-400 font-bold uppercase">나의 텅장 지수</div>
-                        <div class="text-5xl font-black text-slate-800" id="risk-score">0%</div>
-                    </div>
-                    <div class="flex-grow w-full max-w-sm">
-                        <div class="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
-                            <div id="risk-bar" class="h-full bg-amber-500 transition-all duration-700" style="width: 0%"></div>
-                        </div>
-                        <div class="flex justify-between text-[10px] mt-2 font-bold text-slate-400">
-                            <span>안전</span>
-                            <span>주의</span>
-                            <span>위험</span>
-                            <span>탈출불가</span>
-                        </div>
-                    </div>
-                </div>
-                <div id="risk-result-text" class="text-center text-slate-600 font-medium h-6">체크박스를 선택하면 결과가 나옵니다.</div>
-            </div>
-        </section>
-
-        <!-- Psychology Section -->
-        <section id="psychology" class="scroll-mt-20 space-y-10">
-            <div class="text-center space-y-2">
-                <h2 class="text-3xl font-bold text-slate-800">🧠 당신을 가난하게 만드는 심리 함정</h2>
-                <p class="text-slate-500 italic">"의지력이 부족한 게 아니라, 시스템에 당하고 있는 겁니다."</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Trap 1 -->
-                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(0)">
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 flex items-center justify-center rounded-xl text-2xl mb-4">📈</div>
-                    <h3 class="font-bold text-slate-800 text-lg">파킨슨의 법칙</h3>
-                    <p class="text-sm text-slate-500 mt-2">소득이 늘면 지출은 그보다 더 빨리 늘어납니다.</p>
-                </div>
-                <!-- Trap 2 -->
-                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(1)">
-                    <div class="w-12 h-12 bg-red-50 text-red-600 flex items-center justify-center rounded-xl text-2xl mb-4">🔗</div>
-                    <h3 class="font-bold text-slate-800 text-lg">디드로 효과</h3>
-                    <p class="text-sm text-slate-500 mt-2">물건 하나를 사면 그에 맞는 연쇄 소비가 발생합니다.</p>
-                </div>
-                <!-- Trap 3 -->
-                <div class="card-gradient border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer" onclick="showTrapDetail(2)">
-                    <div class="w-12 h-12 bg-amber-50 text-amber-600 flex items-center justify-center rounded-xl text-2xl mb-4">☕</div>
-                    <h3 class="font-bold text-slate-800 text-lg">라떼 효과</h3>
-                    <p class="text-sm text-slate-500 mt-2">작은 소비가 모여 당신의 미래 자산을 삭제합니다.</p>
-                </div>
-            </div>
-
-            <div id="trap-detail-box" class="bg-slate-900 text-slate-100 p-8 rounded-3xl hidden transform transition duration-500">
-                <div class="flex justify-between items-start mb-4">
-                    <h4 id="trap-title" class="text-2xl font-bold text-amber-400"></h4>
-                    <button onclick="closeTrapDetail()" class="text-slate-400 hover:text-white">✕</button>
-                </div>
-                <p id="trap-desc" class="text-slate-300 leading-relaxed"></p>
-                <div class="mt-6 p-4 bg-slate-800 rounded-xl border-l-4 border-amber-500">
-                    <span class="text-xs font-bold text-amber-500 uppercase">Blackbox Solution</span>
-                    <p id="trap-solution" class="text-sm mt-1"></p>
-                </div>
+    <main class="max-w-xl mx-auto px-6 pt-10">
+        
+        <!-- 1. Landing View -->
+        <div id="view-landing" class="space-y-8 animate-fade-in">
+            <div class="space-y-4 text-center">
+                <h1 class="text-4xl font-black leading-tight text-slate-900">
+                    당신은 <span class="text-orange-600">성실함의 함정</span>에<br />빠져있지 않나요?
+                </h1>
+                <p class="text-slate-500 text-lg leading-relaxed">
+                    열심히 일하는데 왜 제자리일까?<br />
+                    당신을 가난에 가두는 '생존 모드' 뇌 구조를<br />
+                    지금 바로 정밀 진단해 드립니다.
+                </p>
             </div>
             
-            <div class="card-gradient border border-slate-100 p-8 rounded-3xl">
-                <h4 class="text-center font-bold text-slate-700 mb-6 italic">"수입이 늘어나도 잔고는 그대로인 이유"</h4>
-                <div class="chart-container">
-                    <canvas id="parkinsonChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Simulator Section -->
-        <section id="simulator" class="scroll-mt-20">
-            <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-lg">
-                <div class="bg-slate-800 p-8 text-white">
-                    <h2 class="text-2xl font-bold">💸 '새는 돈' 기회비용 시뮬레이터</h2>
-                    <p class="text-slate-400 text-sm mt-2">무심코 누른 '결제' 버튼이 10년 뒤 당신의 차 한 대를 날립니다.</p>
-                </div>
-                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div class="space-y-6">
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <label class="text-sm font-bold text-slate-600">☕ 하루 커피/음료</label>
-                                <span class="text-amber-600 font-bold" id="val-coffee">5,000원</span>
-                            </div>
-                            <input type="range" min="0" max="30000" step="500" value="5000" class="w-full" oninput="calculateSimulator('coffee', this.value)">
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <label class="text-sm font-bold text-slate-600">🚕 일 평균 택시/배달</label>
-                                <span class="text-amber-600 font-bold" id="val-taxi">3,000원</span>
-                            </div>
-                            <input type="range" min="0" max="100000" step="1000" value="3000" class="w-full" oninput="calculateSimulator('taxi', this.value)">
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <label class="text-sm font-bold text-slate-600">🛍️ 기타 충동 소비(일 환산)</label>
-                                <span class="text-amber-600 font-bold" id="val-etc">2,000원</span>
-                            </div>
-                            <input type="range" min="0" max="50000" step="1000" value="2000" class="w-full" oninput="calculateSimulator('etc', this.value)">
-                        </div>
+            <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
+                        <i data-lucide="trending-down" size="28"></i>
                     </div>
-                    <div class="flex flex-col justify-center items-center bg-slate-50 rounded-2xl p-6 text-center">
-                        <div class="text-slate-400 text-xs font-bold uppercase mb-1">10년 누적 손실액</div>
-                        <div class="text-4xl font-black text-red-600 mb-2" id="total-loss">₩ 36,500,000</div>
-                        <p class="text-slate-500 text-sm">중형차 한 대 값을<br>'딸깍' 몇 번으로 날리고 계십니다.</p>
+                    <div>
+                        <h3 class="font-bold text-slate-800 tracking-tight">Poverty Mindset Test</h3>
+                        <p class="text-xs text-slate-400">행동경제학 기반 가난 고착화 지수 분석</p>
                     </div>
                 </div>
-                <div class="p-8 border-t border-slate-50">
-                    <div class="chart-container">
-                        <canvas id="lossChart"></canvas>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    본 진단은 터널 시야(Tunnel Vision)와 보상 심리 기제를 바탕으로 당신의 성실함이 '성장'을 향하는지 '정체'를 향하는지 분석합니다.
+                </p>
+            </div>
+
+            <button onclick="showView('quiz')" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xl shadow-xl hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-2">
+                내 마인드셋 진단하기 <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- 2. Quiz View -->
+        <div id="view-quiz" class="hidden space-y-8 animate-slide-up">
+            <div class="flex justify-between items-end px-2">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">심리 블랙박스 분석</h2>
+                    <p class="text-slate-400 text-xs mt-1">평소 무의식적인 생각에 가까운 것을 고르세요.</p>
+                </div>
+                <span id="quiz-progress" class="text-orange-600 font-black text-xl">0 / 8</span>
+            </div>
+
+            <div class="space-y-3" id="questions-container"></div>
+
+            <button onclick="generateReport()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">
+                분석 리포트 생성하기
+            </button>
+        </div>
+
+        <!-- 3. Result View -->
+        <div id="view-result" class="hidden space-y-10 animate-fade-in">
+            <div class="bg-white rounded-[2.5rem] p-10 border border-stone-200 shadow-sm text-center space-y-8">
+                <div class="space-y-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded-full">Mindset Analysis Result</span>
+                    <h2 id="result-label" class="text-3xl font-black">로딩 중...</h2>
+                </div>
+                
+                <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="96" cy="96" r="80" stroke="#f1f5f9" stroke-width="16" fill="transparent" />
+                        <circle id="gauge-path" cx="96" cy="96" r="80" stroke="currentColor" stroke-width="16" fill="transparent" stroke-dasharray="502.4" stroke-dashoffset="502.4" class="gauge-circle" />
+                    </svg>
+                    <div class="absolute flex flex-col items-center">
+                        <span id="result-score" class="text-6xl font-black text-slate-800 tracking-tighter">0</span>
+                        <span class="text-sm font-bold text-slate-400 mt-[-5px]">INDEX</span>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Final Solution -->
-        <section class="bg-amber-50 rounded-3xl p-10 border border-amber-100 space-y-6">
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                🚀 텅장 탈출을 위한 '블랙박스' 행동 강령
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-xl border border-amber-200">
-                    <div class="text-amber-600 font-bold mb-1">01. 선저축 후지출</div>
-                    <p class="text-xs text-slate-500">지출 후 남은 돈을 저축하는 게 아니라, 저축액을 먼저 빼고 남은 돈으로 '생존'하세요.</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-amber-200">
-                    <div class="text-amber-600 font-bold mb-1">02. 72시간 장바구니 법칙</div>
-                    <p class="text-xs text-slate-500">사고 싶은 게 생기면 장바구니에 담고 3일만 기다리세요. 도파민이 사라지면 90%는 안 사게 됩니다.</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-amber-200">
-                    <div class="text-amber-600 font-bold mb-1">03. 통장 쪼개기</div>
-                    <p class="text-xs text-slate-500">생활비 통장에 모든 돈을 두지 마세요. 뇌는 잔고가 있으면 '써도 되는 돈'으로 착각합니다.</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-amber-200">
-                    <div class="text-amber-600 font-bold mb-1">04. 딸깍 사기 주의</div>
-                    <p class="text-xs text-slate-500">누구도 당신에게 쉽게 부자 되는 법을 공짜로 알려주지 않습니다. 본질을 키우는 공부에 투자하세요.</p>
+                <div class="bg-stone-50 p-6 rounded-2xl text-left border border-stone-100">
+                    <p id="result-desc" class="text-slate-700 font-bold leading-relaxed text-sm"></p>
                 </div>
             </div>
-        </section>
 
+            <div class="bg-slate-900 text-white rounded-[2.5rem] p-10 space-y-8">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="unlock" class="text-orange-400" size={24}></i>
+                    <h3 class="text-xl font-black italic uppercase text-orange-400">Exit Strategy</h3>
+                </div>
+                
+                <div class="space-y-6" id="solution-list">
+                    <!-- Dynamic Solutions -->
+                </div>
+            </div>
+
+            <button onclick="resetAudit()" class="w-full py-6 text-slate-400 font-bold flex items-center justify-center gap-2 hover:text-orange-600 transition-colors">
+                <i data-lucide="refresh-ccw" size="18"></i> 다시 테스트하기
+            </button>
+        </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-10">
-        <div class="max-w-4xl mx-auto px-4 text-center space-y-4">
-            <p class="text-slate-400 text-sm">본 보고서는 유튜버 <span class="text-slate-700 font-bold">인간 블랙박스</span> 채널의 기획안을 바탕으로 제작되었습니다.</p>
-            <div class="flex justify-center gap-6 grayscale opacity-50">
-                <span class="text-xs font-bold">심리학</span>
-                <span class="text-xs font-bold">행동경제학</span>
-                <span class="text-xs font-bold">재테크 마인드</span>
-            </div>
-        </div>
+    <footer class="max-w-xl mx-auto px-6 text-center mt-12 space-y-4">
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">
+            © 2026 HUMAN BLACKBOX | SINCERITY TRAP & POVERTY MINDSET REPORT
+        </p>
     </footer>
 
     <script>
-        // --- Core Data ---
-        const traps = [
-            {
-                title: "파킨슨의 법칙 (Parkinson's Law)",
-                desc: "수입이 늘어나면 지출은 그에 맞춰 무조건 늘어납니다. 월급이 200만 원일 때 10만 원 남기던 사람이, 400만 원이 되어도 20만 원밖에 못 남기는 이유입니다. 인간의 욕망은 가용 자원에 맞춰 팽창하기 때문입니다.",
-                sol: "수입 증가분의 최소 70%는 보이지 않는 곳(적금, 투자)으로 즉시 격리시켜야 합니다."
-            },
-            {
-                title: "디드로 효과 (Diderot Effect)",
-                desc: "새로운 가운을 선물 받은 철학자 디드로가 가운에 맞춰 가구, 거울 등을 모두 바꾸며 가난해진 일화에서 유래했습니다. 하나의 소비가 다른 소비를 부르는 연쇄 반응은 당신의 지갑을 털어가는 주범입니다.",
-                sol: "소비할 때 '이 물건 때문에 추가로 사야 할 것'이 있는지 먼저 계산하고, 세트로 사지 마세요."
-            },
-            {
-                title: "라떼 효과 (Latte Factor)",
-                desc: "매일 마시는 5,000원짜리 커피 한 잔을 무시하지 마세요. 소액이라 결제 시 고통이 적지만, 10년, 20년 쌓이면 중형차 한 대, 아파트 한 채의 계약금이 사라지는 마법입니다.",
-                sol: "자잘한 소비(배달, 택시, 커피)의 월 합계액을 눈으로 확인하고, 한도를 정해두세요."
-            }
+        const questions = [
+            { text: "바쁘게 일하지만 1년 뒤의 구체적인 목표는 없다.", weight: 15 },
+            { text: "고생한 나를 위한 '시발비용'이나 보상성 지출이 잦다.", weight: 15 },
+            { text: "새로운 기술을 배우는 것보다 하던 일을 더 열심히 하는 게 편하다.", weight: 10 },
+            { text: "돈 공부는 여유 있는 사람들이나 하는 것이라고 생각한다.", weight: 10 },
+            { text: "퇴근 후에는 너무 지쳐서 자기계발을 할 엄두가 안 난다.", weight: 15 },
+            { text: "주변 친구들도 나처럼 성실하지만 경제적으로 비슷비슷하다.", weight: 10 },
+            { text: "가난은 노력보다 운이나 환경의 영향이 절대적이라 믿는다.", weight: 10 },
+            { text: "장기적인 자산 형성보다 당장의 할부금 해결이 급급하다.", weight: 15 },
         ];
 
-        const quizItems = [
-            "월급날 로그인하자마자 로그아웃된다.",
-            "카드 할부가 3건 이상 살아있다.",
-            "배달 음식이나 택시를 주 3회 이상 탄다.",
-            "스트레스 받으면 무조건 쇼핑 앱을 켠다.",
-            "구독 서비스 중 안 쓰는 게 2개 이상이다.",
-            "내가 한 달에 얼마 쓰는지 정확히 모른다.",
-            "저축하고 남은 돈을 쓰는 게 아니라, 쓰고 남은 걸 저축한다.",
-            "1+1 상품을 보면 일단 사고 본다."
-        ];
+        let answers = new Array(8).fill(false);
 
-        // --- UI Logic ---
-        const quizContainer = document.getElementById('quiz-container');
-        quizItems.forEach((item, idx) => {
-            const div = document.createElement('div');
-            div.className = "flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-xl hover:border-amber-400 transition cursor-pointer";
-            div.innerHTML = `
-                <input type="checkbox" id="q-${idx}" class="w-5 h-5 accent-amber-600 quiz-check" onchange="calculateRisk()">
-                <label for="q-${idx}" class="text-sm font-medium text-slate-700 cursor-pointer flex-grow">${item}</label>
-            `;
-            quizContainer.appendChild(div);
-        });
+        function init() {
+            lucide.createIcons();
+            renderQuestions();
+        }
 
-        function calculateRisk() {
-            const checked = document.querySelectorAll('.quiz-check:checked').length;
-            const score = Math.round((checked / quizItems.length) * 100);
-            const scoreEl = document.getElementById('risk-score');
-            const barEl = document.getElementById('risk-bar');
-            const textEl = document.getElementById('risk-result-text');
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = questions.map((q, idx) => `
+                <div onclick="toggleAnswer(${idx})" id="q-card-${idx}" class="flex items-center gap-4 p-5 rounded-2xl border bg-white border-stone-200 hover:border-orange-200 transition-all cursor-pointer">
+                    <div id="q-check-${idx}" class="w-6 h-6 rounded-full border-2 border-stone-300 flex items-center justify-center transition-colors">
+                        <i data-lucide="check" class="text-white w-4 h-4 hidden"></i>
+                    </div>
+                    <span id="q-text-${idx}" class="text-sm font-bold text-slate-700 transition-colors">${q.text}</span>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
 
-            scoreEl.innerText = `${score}%`;
-            barEl.style.width = `${score}%`;
+        function showView(viewId) {
+            document.getElementById('view-landing').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
 
-            if (score < 30) {
-                textEl.innerText = "훌륭합니다! 당신은 자제력이 매우 뛰어납니다. ✨";
-                barEl.className = "h-full bg-green-500 transition-all duration-700";
-            } else if (score < 60) {
-                textEl.innerText = "위험 구간입니다. 슬슬 구멍 난 지갑을 고쳐야 해요. ⚠️";
-                barEl.className = "h-full bg-amber-500 transition-all duration-700";
+        function toggleAnswer(idx) {
+            answers[idx] = !answers[idx];
+            const card = document.getElementById(`q-card-${idx}`);
+            const check = document.getElementById(`q-check-${idx}`);
+            const text = document.getElementById(`q-text-${idx}`);
+            const icon = check.querySelector('i');
+
+            if (answers[idx]) {
+                card.classList.add('bg-orange-50', 'border-orange-400');
+                check.classList.add('bg-orange-600', 'border-orange-600');
+                text.classList.add('text-orange-900');
+                icon.classList.remove('hidden');
             } else {
-                textEl.innerText = "당신은 현재 마케팅 깔때기의 중심에 서 있습니다. 🚨";
-                barEl.className = "h-full bg-red-600 transition-all duration-700";
+                card.classList.remove('bg-orange-50', 'border-orange-400');
+                check.classList.remove('bg-orange-600', 'border-orange-600');
+                text.classList.remove('text-orange-900');
+                icon.classList.add('hidden');
             }
+            document.getElementById('quiz-progress').innerText = `${answers.filter(Boolean).length} / 8`;
         }
 
-        function showTrapDetail(idx) {
-            const box = document.getElementById('trap-detail-box');
-            document.getElementById('trap-title').innerText = traps[idx].title;
-            document.getElementById('trap-desc').innerText = traps[idx].desc;
-            document.getElementById('trap-solution').innerText = traps[idx].sol;
+        function generateReport() {
+            let score = 0;
+            answers.forEach((ans, idx) => { if (ans) score += questions[idx].weight; });
+
+            const labelEl = document.getElementById('result-label');
+            const descEl = document.getElementById('result-desc');
+            const scoreEl = document.getElementById('result-score');
+            const gaugePath = document.getElementById('gauge-path');
+            const solContainer = document.getElementById('solution-list');
+
+            let status = {};
+            if (score < 30) {
+                status = { label: "전략적 자산가형", color: "text-emerald-500", desc: "성실함을 도구로 쓸 줄 아는 분입니다. 이미 시스템을 구축하고 있거나 그 길에 들어서 있네요!" };
+            } else if (score < 60) {
+                status = { label: "성실한 정체기", color: "text-amber-500", desc: "노력의 방향이 살짝 어긋나 있습니다. 열심히는 하지만 '나를 위한 성장'보다는 '현상 유지'에 치중하고 계시네요." };
+            } else {
+                status = { label: "위험: 쳇바퀴 증후군", color: "text-red-600", desc: "생존 모드에 뇌가 잠식되었습니다. 열심히 일할수록 에너지는 고갈되고 가난의 고리는 단단해지는 위험한 상태입니다." };
+            }
+
+            labelEl.innerText = status.label;
+            labelEl.className = `text-3xl font-black ${status.color}`;
+            descEl.innerText = status.desc;
+            scoreEl.innerText = score;
             
-            box.classList.remove('hidden');
-            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const dashOffset = 502.4 - (502.4 * score) / 100;
+            gaugePath.style.strokeDashoffset = dashOffset;
+            gaugePath.setAttribute('class', `gauge-circle ${status.color}`);
+
+            solContainer.innerHTML = `
+                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">01</div><div class="space-y-1"><h4 class="font-black text-slate-100">의도적 게으름 실천</h4><p class="text-xs text-slate-400">무작정 열심히 하기보다 하루 1시간은 '아무것도 하지 않고' 미래를 설계하는 시간을 가지세요.</p></div></div>
+                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">02</div><div class="space-y-1"><h4 class="font-black text-slate-100">보상 심리 끊어내기</h4><p class="text-xs text-slate-400">스트레스를 소비로 푸는 습관이 가난의 일등 공신입니다. 소비 대신 '운동'이나 '잠'으로 뇌를 회복시키세요.</p></div></div>
+                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">03</div><div class="space-y-1"><h4 class="font-black text-slate-100">전체 영상 복습</h4><p class="text-xs text-slate-400">성실함이 어떻게 당신을 속이는지, 영상의 **3분 05초** '가난한 노력' 파트를 다시 시청하세요.</p></div></div>
+            `;
+
+            showView('result');
         }
 
-        function closeTrapDetail() {
-            document.getElementById('trap-detail-box').classList.add('hidden');
+        function resetAudit() {
+            answers = new Array(8).fill(false);
+            renderQuestions();
+            document.getElementById('quiz-progress').innerText = "0 / 8";
+            showView('landing');
         }
 
-        // --- Charts Implementation ---
-        let lossChart, parkinsonChart;
-
-        function initCharts() {
-            // Parkinson's Chart
-            const ctxP = document.getElementById('parkinsonChart').getContext('2d');
-            parkinsonChart = new Chart(ctxP, {
-                type: 'line',
-                data: {
-                    labels: ['사원', '대리', '과장', '차장', '부장'],
-                    datasets: [{
-                        label: '월 소득 (백만)',
-                        data: [2.5, 3.5, 4.5, 5.5, 7.0],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }, {
-                        label: '월 지출 (백만)',
-                        data: [2.3, 3.4, 4.4, 5.4, 6.9],
-                        borderColor: '#ef4444',
-                        borderDash: [5, 5],
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
-                    },
-                    scales: {
-                        y: { beginAtZero: false, ticks: { font: { size: 10 } } },
-                        x: { ticks: { font: { size: 10 } } }
-                    }
-                }
-            });
-
-            // Loss Chart
-            const ctxL = document.getElementById('lossChart').getContext('2d');
-            lossChart = new Chart(ctxL, {
-                type: 'bar',
-                data: {
-                    labels: ['1년', '3년', '5년', '10년'],
-                    datasets: [{
-                        label: '누적 기회비용 (원)',
-                        data: [3650000, 10950000, 18250000, 36500000],
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { 
-                            ticks: { 
-                                callback: value => (value / 10000).toLocaleString() + '만',
-                                font: { size: 10 }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        const simState = { coffee: 5000, taxi: 3000, etc: 2000 };
-
-        function calculateSimulator(key, val) {
-            simState[key] = parseInt(val);
-            document.getElementById(`val-${key}`).innerText = simState[key].toLocaleString() + '원';
-
-            const dailyTotal = simState.coffee + simState.taxi + simState.etc;
-            const total10 = dailyTotal * 365 * 10;
-
-            document.getElementById('total-loss').innerText = `₩ ${total10.toLocaleString()}`;
-            
-            lossChart.data.datasets[0].data = [
-                dailyTotal * 365,
-                dailyTotal * 365 * 3,
-                dailyTotal * 365 * 5,
-                total10
-            ];
-            lossChart.update();
-        }
-
-        window.onload = () => {
-            initCharts();
-            calculateRisk();
-        };
-
+        init();
     </script>
 </body>
 </html>
