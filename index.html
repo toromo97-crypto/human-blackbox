@@ -1,66 +1,58 @@
+<!-- Chosen Palette: Deep Slate & Soft Indigo (불안한 밤의 감성을 차분하게 잡아주는 심리테스트 톤) -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sincerity Trap Audit | 인간 블랙박스</title>
+    <title>마음검색소: 거절 민감성 & 반추사고 진단</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
-        body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; color: #0f172a; }
         .animate-fade-in { animation: fadeIn 0.7s ease-out forwards; }
         .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .gauge-circle { transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden { display: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="bg-stone-50 text-slate-900 min-h-screen pb-20">
+<body class="min-h-screen pb-20">
 
-    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
-        <div class="max-w-xl mx-auto px-6 h-16 flex items-center justify-between">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-slate-900 rounded flex items-center justify-center text-white font-bold italic">B</div>
-                <span class="font-extrabold tracking-tighter text-lg uppercase">Sincerity <span class="text-orange-600">Trap</span> Audit</span>
+                <div class="w-8 h-8 bg-indigo-900 rounded flex items-center justify-center text-white font-bold">M</div>
+                <span class="font-extrabold tracking-tight text-lg text-slate-800">마음검색소 <span class="text-indigo-600 font-medium text-sm ml-1">내 마음의 블랙박스</span></span>
             </div>
-            <span class="text-[10px] font-bold text-slate-400 border border-stone-200 px-2 py-1 rounded">REF. ID: HB-POVERTY-02</span>
+            <span class="text-[10px] font-bold text-slate-400 border border-slate-200 px-2 py-1 rounded">REPORT NO. 03</span>
         </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-6 pt-10">
+    <main class="max-w-3xl mx-auto px-6 pt-10">
         
         <!-- 1. Landing View -->
         <div id="view-landing" class="space-y-8 animate-fade-in">
-            <div class="space-y-4 text-center">
-                <h1 class="text-4xl font-black leading-tight text-slate-900">
-                    당신은 <span class="text-orange-600">성실함의 함정</span>에<br />빠져있지 않나요?
+            <div class="text-center space-y-4 pt-4">
+                <div class="inline-block p-4 bg-indigo-50 rounded-full mb-2 text-indigo-600">
+                    <i data-lucide="message-circle-warning" size="32"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black leading-tight text-slate-900">
+                    안 사라지는 숫자 '1',<br>당신을 괴롭히고 있나요?
                 </h1>
-                <p class="text-slate-500 text-lg leading-relaxed">
-                    열심히 일하는데 왜 제자리일까?<br />
-                    당신을 가난에 가두는 '생존 모드' 뇌 구조를<br />
-                    지금 바로 정밀 진단해 드립니다.
+                <p class="text-slate-500 text-base md:text-lg leading-relaxed">
+                    단톡방의 침묵은 사실 당신에 대한 거절이 아닙니다.<br>
+                    타인의 무반응을 '공격'으로 해석하는 <strong class="text-indigo-600">거절 민감성</strong>과<br>
+                    과거의 대화를 무한 반복하는 <strong class="text-indigo-600">사회적 반추사고</strong>를 진단해 드립니다.
                 </p>
             </div>
             
-            <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
-                        <i data-lucide="trending-down" size="28"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 tracking-tight">Poverty Mindset Test</h3>
-                        <p class="text-xs text-slate-400">행동경제학 기반 가난 고착화 지수 분석</p>
-                    </div>
-                </div>
-                <p class="text-sm text-slate-600 leading-relaxed">
-                    본 진단은 터널 시야(Tunnel Vision)와 보상 심리 기제를 바탕으로 당신의 성실함이 '성장'을 향하는지 '정체'를 향하는지 분석합니다.
-                </p>
-            </div>
-
-            <button onclick="showView('quiz')" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xl shadow-xl hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-2">
-                내 마인드셋 진단하기 <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            <button onclick="showView('quiz')" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-bold text-lg shadow-lg hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2">
+                내 마음 상태 검색하기 <i data-lucide="search" class="w-5 h-5"></i>
             </button>
         </div>
 
@@ -68,24 +60,40 @@
         <div id="view-quiz" class="hidden space-y-8 animate-slide-up">
             <div class="flex justify-between items-end px-2">
                 <div>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">심리 블랙박스 분석</h2>
-                    <p class="text-slate-400 text-xs mt-1">평소 무의식적인 생각에 가까운 것을 고르세요.</p>
+                    <h2 class="text-2xl font-black text-slate-800">심리 블랙박스 해독 중</h2>
+                    <p class="text-slate-400 text-xs mt-1">평소 내 모습과 가장 가까운 것을 모두 고르세요.</p>
                 </div>
-                <span id="quiz-progress" class="text-orange-600 font-black text-xl">0 / 8</span>
+                <span id="quiz-progress" class="text-indigo-600 font-black text-xl">0 / 10</span>
             </div>
 
-            <div class="space-y-3" id="questions-container"></div>
+            <!-- Part 1: 거절 민감성 -->
+            <div class="space-y-3">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2">
+                    <i data-lucide="shield-alert" class="w-5 h-5 text-indigo-500"></i> Part 1. 거절 민감성 (현재의 불안)
+                </h3>
+                <div id="questions-part1" class="space-y-3"></div>
+            </div>
 
-            <button onclick="generateReport()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">
-                분석 리포트 생성하기
+            <!-- Part 2: 사회적 반추사고 -->
+            <div class="space-y-3 pt-6">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2">
+                    <i data-lucide="history" class="w-5 h-5 text-indigo-500"></i> Part 2. 사회적 반추사고 (과거의 얽매임)
+                </h3>
+                <div id="questions-part2" class="space-y-3"></div>
+            </div>
+
+            <button onclick="generateReport()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-lg shadow-lg transition-all active:scale-95 mt-8">
+                분석 결과 확인하기
             </button>
         </div>
 
         <!-- 3. Result View -->
         <div id="view-result" class="hidden space-y-10 animate-fade-in">
-            <div class="bg-white rounded-[2.5rem] p-10 border border-stone-200 shadow-sm text-center space-y-8">
+            
+            <!-- Score Card -->
+            <div class="glass-card p-10 text-center space-y-8">
                 <div class="space-y-2">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded-full">Mindset Analysis Result</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">심리 분석 리포트</span>
                     <h2 id="result-label" class="text-3xl font-black">로딩 중...</h2>
                 </div>
                 
@@ -96,67 +104,120 @@
                     </svg>
                     <div class="absolute flex flex-col items-center">
                         <span id="result-score" class="text-6xl font-black text-slate-800 tracking-tighter">0</span>
-                        <span class="text-sm font-bold text-slate-400 mt-[-5px]">INDEX</span>
+                        <span class="text-sm font-bold text-slate-400 mt-[-5px]">종합 과부하(%)</span>
                     </div>
                 </div>
 
-                <div class="bg-stone-50 p-6 rounded-2xl text-left border border-stone-100">
-                    <p id="result-desc" class="text-slate-700 font-bold leading-relaxed text-sm"></p>
+                <div class="bg-indigo-50 p-6 rounded-2xl text-left border border-indigo-100">
+                    <p id="result-desc" class="text-slate-700 font-medium leading-relaxed text-sm"></p>
                 </div>
             </div>
 
-            <div class="bg-slate-900 text-white rounded-[2.5rem] p-10 space-y-8">
+            <!-- Analysis Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-slate-800 mb-4 text-center text-sm flex items-center justify-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i> 나의 핵심 취약점
+                    </h3>
+                    <div class="relative w-full h-48">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <p id="bar-comment" class="text-[11px] text-slate-500 text-center mt-3 font-medium"></p>
+                </div>
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-slate-800 mb-4 text-center text-sm flex items-center justify-center gap-2">
+                        <i data-lucide="brain" class="w-4 h-4 text-indigo-600"></i> 나의 심리 레이더망
+                    </h3>
+                    <div class="relative w-full h-48">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solutions -->
+            <div class="bg-slate-900 text-white rounded-3xl p-8 md:p-10 space-y-8">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="unlock" class="text-orange-400" size={24}></i>
-                    <h3 class="text-xl font-black italic uppercase text-orange-400">Exit Strategy</h3>
+                    <i data-lucide="shield-check" class="text-indigo-400"></i>
+                    <h3 class="text-xl font-bold text-indigo-400">마음의 근육을 키우는 3단계 처방</h3>
                 </div>
                 
-                <div class="space-y-6" id="solution-list">
-                    <!-- Dynamic Solutions -->
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-indigo-400 shrink-0">1</div>
+                        <div>
+                            <h4 class="font-bold text-slate-100 mb-1">스포트라이트 끄기</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">사람들은 생각보다 타인에게 관심이 없습니다. 단톡방의 침묵은 나에 대한 평가가 아니라, 각자 자기 인생을 사느라 바쁜 것뿐임을 인정하세요.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-indigo-400 shrink-0">2</div>
+                        <div>
+                            <h4 class="font-bold text-slate-100 mb-1">반대 증거 1개 수집하기</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">뇌가 부정적인 소설(확증편향)을 쓰기 전에 제동을 거세요. "단순히 운전 중일 수도 있잖아?" 라는 객관적 반대 증거 하나만 떠올려도 불안은 멈춥니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-indigo-400 shrink-0">3</div>
+                        <div>
+                            <h4 class="font-bold text-slate-100 mb-1">20분의 물리적 거리두기</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">메시지 전송 후 화면을 계속 보는 것은 상처를 찌르는 행위입니다. 딱 20분만 폰을 뒤집어두고 설거지나 스트레칭으로 주의력을 돌리세요.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <button onclick="resetAudit()" class="w-full py-6 text-slate-400 font-bold flex items-center justify-center gap-2 hover:text-orange-600 transition-colors">
-                <i data-lucide="refresh-ccw" size="18"></i> 다시 테스트하기
+            <button onclick="resetAudit()" class="w-full py-4 text-slate-400 font-medium flex items-center justify-center gap-2 hover:text-indigo-600 transition-colors">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 진단 다시하기
             </button>
         </div>
     </main>
 
-    <footer class="max-w-xl mx-auto px-6 text-center mt-12 space-y-4">
-        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">
-            © 2026 HUMAN BLACKBOX | SINCERITY TRAP & POVERTY MINDSET REPORT
-        </p>
+    <footer class="mt-12 py-8 text-center border-t border-slate-200">
+        <p class="text-xs text-slate-400 font-medium">© 2026 마음검색소 | 내 마음의 블랙박스</p>
     </footer>
 
     <script>
+        // 문항 데이터 (Part 1: 거절 민감성, Part 2: 사회적 반추사고)
         const questions = [
-            { text: "바쁘게 일하지만 1년 뒤의 구체적인 목표는 없다.", weight: 15 },
-            { text: "고생한 나를 위한 '시발비용'이나 보상성 지출이 잦다.", weight: 15 },
-            { text: "새로운 기술을 배우는 것보다 하던 일을 더 열심히 하는 게 편하다.", weight: 10 },
-            { text: "돈 공부는 여유 있는 사람들이나 하는 것이라고 생각한다.", weight: 10 },
-            { text: "퇴근 후에는 너무 지쳐서 자기계발을 할 엄두가 안 난다.", weight: 15 },
-            { text: "주변 친구들도 나처럼 성실하지만 경제적으로 비슷비슷하다.", weight: 10 },
-            { text: "가난은 노력보다 운이나 환경의 영향이 절대적이라 믿는다.", weight: 10 },
-            { text: "장기적인 자산 형성보다 당장의 할부금 해결이 급급하다.", weight: 15 },
+            // Part 1
+            { id: 0, part: 1, text: "단톡방에서 내 말에 대답이 없으면 '내가 실수했나?' 하고 즉시 불안해진다." },
+            { id: 1, part: 1, text: "상대방의 표정이나 연락 빈도가 조금만 줄어도 나를 싫어한다고 생각한다." },
+            { id: 2, part: 1, text: "거절당할까 봐 두려워서 내 의견을 말하기보다 상대에게 맞추는 편이다." },
+            { id: 3, part: 1, text: "메시지를 보낼 때 오해를 살까 봐 쓰고 지우기를 여러 번 반복한다." },
+            { id: 4, part: 1, text: "누군가 내 부탁을 거절하면, 그 행동이 아닌 '나'를 거절한 것으로 느낀다." },
+            // Part 2
+            { id: 5, part: 2, text: "잠자리에 누우면 낮에 사람들과 있었던 대화가 머릿속에서 무한 반복된다." },
+            { id: 6, part: 2, text: "'아까 그 말은 하지 말걸'이라며 지나간 상황을 자주 후회하고 자책한다." },
+            { id: 7, part: 2, text: "다른 사람이 무심코 던진 말을 며칠 동안 곱씹으며 진짜 의미를 찾으려 한다." },
+            { id: 8, part: 2, text: "과거에 창피했던 기억이나 실수한 일이 불쑥불쑥 떠올라 괴롭다." },
+            { id: 9, part: 2, text: "이미 끝난 대화를 머릿속으로 다시 시뮬레이션하며 '이렇게 말할걸' 상상한다." }
         ];
 
-        let answers = new Array(8).fill(false);
+        let answers = new Array(10).fill(false);
+        let radarChart, barChart;
 
         function init() {
             lucide.createIcons();
-            renderQuestions();
-        }
+            
+            const part1Container = document.getElementById('questions-part1');
+            const part2Container = document.getElementById('questions-part2');
+            
+            part1Container.innerHTML = '';
+            part2Container.innerHTML = '';
 
-        function renderQuestions() {
-            const container = document.getElementById('questions-container');
-            container.innerHTML = questions.map((q, idx) => `
-                <div onclick="toggleAnswer(${idx})" id="q-card-${idx}" class="flex items-center gap-4 p-5 rounded-2xl border bg-white border-stone-200 hover:border-orange-200 transition-all cursor-pointer">
-                    <div id="q-check-${idx}" class="w-6 h-6 rounded-full border-2 border-stone-300 flex items-center justify-center transition-colors">
-                        <i data-lucide="check" class="text-white w-4 h-4 hidden"></i>
+            questions.forEach((q) => {
+                const html = `
+                    <div onclick="toggleAnswer(${q.id})" id="q-card-${q.id}" class="flex items-center gap-4 p-4 rounded-xl border bg-white border-slate-200 hover:border-indigo-300 transition-all cursor-pointer">
+                        <div id="q-check-${q.id}" class="w-6 h-6 shrink-0 rounded-full border-2 border-slate-300 flex items-center justify-center transition-colors">
+                            <i data-lucide="check" class="text-white w-4 h-4 hidden"></i>
+                        </div>
+                        <span id="q-text-${q.id}" class="text-sm font-medium text-slate-700">${q.text}</span>
                     </div>
-                    <span id="q-text-${idx}" class="text-sm font-bold text-slate-700 transition-colors">${q.text}</span>
-                </div>
-            `).join('');
+                `;
+                if (q.part === 1) part1Container.innerHTML += html;
+                else part2Container.innerHTML += html;
+            });
+            
             lucide.createIcons();
         }
 
@@ -176,64 +237,129 @@
             const icon = check.querySelector('i');
 
             if (answers[idx]) {
-                card.classList.add('bg-orange-50', 'border-orange-400');
-                check.classList.add('bg-orange-600', 'border-orange-600');
-                text.classList.add('text-orange-900');
+                card.classList.add('bg-indigo-50', 'border-indigo-400');
+                check.classList.add('bg-indigo-600', 'border-indigo-600');
+                text.classList.add('text-indigo-900', 'font-bold');
                 icon.classList.remove('hidden');
             } else {
-                card.classList.remove('bg-orange-50', 'border-orange-400');
-                check.classList.remove('bg-orange-600', 'border-orange-600');
-                text.classList.remove('text-orange-900');
+                card.classList.remove('bg-indigo-50', 'border-indigo-400');
+                check.classList.remove('bg-indigo-600', 'border-indigo-600');
+                text.classList.remove('text-indigo-900', 'font-bold');
                 icon.classList.add('hidden');
             }
-            document.getElementById('quiz-progress').innerText = `${answers.filter(Boolean).length} / 8`;
+            document.getElementById('quiz-progress').innerText = `${answers.filter(Boolean).length} / 10`;
         }
 
         function generateReport() {
-            let score = 0;
-            answers.forEach((ans, idx) => { if (ans) score += questions[idx].weight; });
+            let rejectionScore = 0; // max 50
+            let ruminationScore = 0; // max 50
+
+            answers.forEach((ans, idx) => { 
+                if (ans) {
+                    if (questions[idx].part === 1) rejectionScore += 10;
+                    else ruminationScore += 10;
+                }
+            });
+
+            const totalScore = rejectionScore + ruminationScore;
 
             const labelEl = document.getElementById('result-label');
             const descEl = document.getElementById('result-desc');
             const scoreEl = document.getElementById('result-score');
             const gaugePath = document.getElementById('gauge-path');
-            const solContainer = document.getElementById('solution-list');
+            const barComment = document.getElementById('bar-comment');
 
             let status = {};
-            if (score < 30) {
-                status = { label: "전략적 자산가형", color: "text-emerald-500", desc: "성실함을 도구로 쓸 줄 아는 분입니다. 이미 시스템을 구축하고 있거나 그 길에 들어서 있네요!" };
-            } else if (score < 60) {
-                status = { label: "성실한 정체기", color: "text-amber-500", desc: "노력의 방향이 살짝 어긋나 있습니다. 열심히는 하지만 '나를 위한 성장'보다는 '현상 유지'에 치중하고 계시네요." };
+            if (totalScore <= 30) {
+                status = { label: "평온한 단단함", color: "text-emerald-500", desc: "매우 건강한 심리 상태입니다. 타인의 반응에 크게 휘둘리지 않고, 과거의 실수도 가볍게 넘길 수 있는 내면의 힘을 가졌습니다." };
+            } else if (totalScore <= 60) {
+                status = { label: "경미한 주의 경보", color: "text-amber-500", desc: "타인의 시선을 조금 신경 쓰거나, 이따금씩 과거의 대화를 후회하는 편입니다. 인간관계의 마찰을 피하려는 배려심이 가끔은 내 에너지를 갉아먹고 있진 않은지 점검이 필요합니다." };
             } else {
-                status = { label: "위험: 쳇바퀴 증후군", color: "text-red-600", desc: "생존 모드에 뇌가 잠식되었습니다. 열심히 일할수록 에너지는 고갈되고 가난의 고리는 단단해지는 위험한 상태입니다." };
+                status = { label: "위험: 심리적 과부하", color: "text-rose-500", desc: "지금 당신의 뇌는 타인의 무반응을 '위협'으로 느끼고, 지나간 일을 무한 반복 재생하며 에너지를 고갈시키고 있습니다. 타인의 감정을 내 책임으로 가져오는 습관을 당장 멈춰야 합니다." };
             }
 
             labelEl.innerText = status.label;
             labelEl.className = `text-3xl font-black ${status.color}`;
-            descEl.innerText = status.desc;
-            scoreEl.innerText = score;
+            descEl.innerHTML = `<strong>종합 분석:</strong> ${status.desc}`;
+            scoreEl.innerText = totalScore;
             
-            const dashOffset = 502.4 - (502.4 * score) / 100;
-            gaugePath.style.strokeDashoffset = dashOffset;
-            gaugePath.setAttribute('class', `gauge-circle ${status.color}`);
+            if (rejectionScore > ruminationScore) {
+                barComment.innerText = "* '현재 타인의 반응'에 더 예민하게 반응하는 편입니다.";
+            } else if (ruminationScore > rejectionScore) {
+                barComment.innerText = "* '과거의 내 행동'을 자책하며 에너지를 더 쓰는 편입니다.";
+            } else {
+                barComment.innerText = "* 타인의 시선과 과거의 후회로 에너지가 고르게 소진 중입니다.";
+            }
 
-            solContainer.innerHTML = `
-                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">01</div><div class="space-y-1"><h4 class="font-black text-slate-100">의도적 게으름 실천</h4><p class="text-xs text-slate-400">무작정 열심히 하기보다 하루 1시간은 '아무것도 하지 않고' 미래를 설계하는 시간을 가지세요.</p></div></div>
-                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">02</div><div class="space-y-1"><h4 class="font-black text-slate-100">보상 심리 끊어내기</h4><p class="text-xs text-slate-400">스트레스를 소비로 푸는 습관이 가난의 일등 공신입니다. 소비 대신 '운동'이나 '잠'으로 뇌를 회복시키세요.</p></div></div>
-                <div class="flex gap-4"><div class="flex-shrink-0 w-6 h-6 rounded bg-orange-600 text-white flex items-center justify-center text-[10px] font-black mt-1">03</div><div class="space-y-1"><h4 class="font-black text-slate-100">전체 영상 복습</h4><p class="text-xs text-slate-400">성실함이 어떻게 당신을 속이는지, 영상의 **3분 05초** '가난한 노력' 파트를 다시 시청하세요.</p></div></div>
-            `;
+            // 게이지 애니메이션
+            const dashOffset = 502.4 - (502.4 * totalScore) / 100;
+            setTimeout(() => {
+                gaugePath.style.strokeDashoffset = dashOffset;
+                gaugePath.setAttribute('class', `gauge-circle ${status.color}`);
+            }, 100);
 
+            renderCharts(rejectionScore, ruminationScore, totalScore);
             showView('result');
         }
 
+        function renderCharts(rej, rum, total) {
+            // 막대 차트 (거절 민감성 vs 반추사고 비교)
+            const ctxB = document.getElementById('barChart').getContext('2d');
+            if(barChart) barChart.destroy();
+            
+            barChart = new Chart(ctxB, {
+                type: 'bar',
+                data: {
+                    labels: ['거절 민감성 (현재)', '사회적 반추 (과거)'],
+                    datasets: [{
+                        label: '위험도 지수',
+                        data: [rej * 2, rum * 2], // 100점 만점으로 스케일업
+                        backgroundColor: ['rgba(99, 102, 241, 0.8)', 'rgba(244, 63, 94, 0.8)'], // indigo & rose
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100 } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 레이더 차트 (전체적 성향)
+            const ctxR = document.getElementById('radarChart').getContext('2d');
+            if(radarChart) radarChart.destroy();
+            
+            let baseVal = total > 20 ? total : 20;
+            radarChart = new Chart(ctxR, {
+                type: 'radar',
+                data: {
+                    labels: ['타인 시선 의식', '거절 두려움', '과거 얽매임', '부정적 해석', '에너지 소진'],
+                    datasets: [{
+                        label: '나의 성향',
+                        data: [rej * 2, rej * 2, rum * 2, total, total],
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)', // indigo-600
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
         function resetAudit() {
-            answers = new Array(8).fill(false);
-            renderQuestions();
-            document.getElementById('quiz-progress').innerText = "0 / 8";
+            answers = new Array(10).fill(false);
+            init();
+            document.getElementById('quiz-progress').innerText = "0 / 10";
+            document.getElementById('gauge-path').style.strokeDashoffset = 502.4;
             showView('landing');
         }
 
-        init();
+        window.onload = init;
     </script>
 </body>
 </html>
